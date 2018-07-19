@@ -6,9 +6,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import com.cognizant.surveyMonkey.Excel.ExcelUtility;
-import com.cognizant.surveyMonkey.Pages.IndividualResponsePage;
-import com.cognizant.surveyMonkey.Pages.NavigationPages;
+import com.cognizant.surveyMonkey.excel.ExcelUtility;
+import com.cognizant.surveyMonkey.pages.IndividualResponsePage;
+import com.cognizant.surveyMonkey.pages.NavigationPages;
+import com.cognizant.surveyMonkey.Selenium;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,9 +67,9 @@ public class ExtractResults {
 		String email = respondentElement.findElement(By.xpath(".//span[text()='Email:']/following-sibling::span"))
 				.getText();
 		System.out.println(email);
-		int respondentCol = (respondentNumber - 1) * 2 + 2;
-		ExcelUtility.setCellData("Respondent #" + respondentNumber, 0, respondentCol);
-		ExcelUtility.setCellData(email, 1, respondentCol);
+		int respondentRow = respondentNumber+1;
+		ExcelUtility.setCellData("Respondent #" + respondentNumber, respondentRow, 0);
+		ExcelUtility.setCellData(email, respondentRow, 1);
 
 		List<WebElement> questionElements = respondentElement
 				.findElements(By.cssSelector(".response-question-container"));
@@ -80,13 +81,13 @@ public class ExtractResults {
 					.println("-----" + questionElement.findElement(By.className("question-title")).getText() + "-----");
 			String qTitle = questionElement.findElement(By.className("question-title")).getText();
 			if (i < 5) {
-				individualResponsePage.getMatrixRatingQuestion(questionElement, qTitle, respondentCol);
+				individualResponsePage.getMatrixRatingQuestion(questionElement, qTitle, respondentRow);
 			}
 			if (i == 5) {
-				individualResponsePage.getMultipleChoiceQuestion(questionElement, qTitle, respondentCol);
+				individualResponsePage.getMultipleChoiceQuestion(questionElement, qTitle, respondentRow);
 			}
 			if (i == 6) {
-				individualResponsePage.getEssayQuestion(questionElement, qTitle, respondentCol);
+				individualResponsePage.getEssayQuestion(questionElement, qTitle, respondentRow);
 			}
 			i++;
 		}

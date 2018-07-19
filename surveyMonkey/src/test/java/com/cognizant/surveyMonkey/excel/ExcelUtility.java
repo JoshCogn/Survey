@@ -1,4 +1,4 @@
-package com.cognizant.surveyMonkey.Excel;
+package com.cognizant.surveyMonkey.excel;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -11,6 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 
 
 public class ExcelUtility {
@@ -143,11 +144,11 @@ public class ExcelUtility {
 		}
 	}
 
-	public static int getRowNumberOfLabel(String label) {
+	public static int getRowNumberOfLabel(String label, int colNum) {
 		try {
 			int numOfRows = excelWSheet.getPhysicalNumberOfRows();
 			for (int i = 0; i < numOfRows; i++) {
-				String cellData = getCellData(i, 0);
+				String cellData = getCellData(i, colNum);
 				if (cellData.equalsIgnoreCase(label)) {
 					//System.out.println(label + " at " + i);
 					return i;
@@ -161,5 +162,31 @@ public class ExcelUtility {
 		}
 
 	}
+	
+	
+	public static int getColumnNumberOfLabel(String columnLabel, int rowNum, int startFromRow) {
+		try {
+			row = ExcelUtility.getRowData(rowNum);
+			int noOfColumns = row.getLastCellNum();
+			//System.out.println("search from " + startFromRow + " to " + noOfColumns);
+			for (int i = startFromRow; i < noOfColumns; i++) {
+				// System.out.println(ExcelUtil.getCellData(0, i));
+				if (ExcelUtility.getCellData(rowNum , i).equalsIgnoreCase(columnLabel)) {
+					return i;
+				}
+			}
+			System.err.println("Could not find column " + columnLabel);
+			return 2;
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+			return 2;
+		}
+	}
+	
+	public static int getColumnNumberOfLabel(String columnLabel, int rowNum) {
+		return getColumnNumberOfLabel(columnLabel, rowNum, 0);
+	}
+	
 
 }

@@ -1,4 +1,4 @@
-package com.cognizant.surveyMonkey.Pages;
+package com.cognizant.surveyMonkey.pages;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +11,7 @@ import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import com.cognizant.surveyMonkey.Excel.ExcelUtility;
+import com.cognizant.surveyMonkey.excel.ExcelUtility;
 
 public class IndividualResponsePage {
 	
@@ -86,9 +86,10 @@ public class IndividualResponsePage {
 	
 	
 	
-	public void getMultipleChoiceQuestion(WebElement questionElement, String qTitle, int respondentCol) {
+	public void getMultipleChoiceQuestion(WebElement questionElement, String qTitle, int respondentRow) {
 
-		int questionRow = ExcelUtility.getRowNumberOfLabel(qTitle);
+		int questionCol = ExcelUtility.getColumnNumberOfLabel(qTitle,0);
+		int optionCol;
 
 		List<WebElement> responseElements = questionElement
 				.findElements(By.cssSelector(".response-container li.response-list-item"));
@@ -96,16 +97,18 @@ public class IndividualResponsePage {
 
 		for (WebElement responseElement : responseElements) {
 			response = responseElement.findElement(By.cssSelector(".response-text")).getText();
+			optionCol = ExcelUtility.getColumnNumberOfLabel(response, 1, questionCol);
 
 			System.out.println(response);
-			ExcelUtility.setCellData(response, questionRow, respondentCol);
+			ExcelUtility.setCellData(response, respondentRow, optionCol);
 		}
 		boolean commentExists = doesByElementExist(By.cssSelector(".response-list-comment"),questionElement);
 		if (commentExists) {
 			//System.out.println("Comment exists:");
 			response = questionElement.findElement(By.cssSelector(".response-text.other-item.ta-response-item")).getText();
 			//System.out.println(response);
-			ExcelUtility.setCellData(response, questionRow, respondentCol);
+			optionCol = ExcelUtility.getColumnNumberOfLabel("Other / More details:", 1, questionCol);
+			ExcelUtility.setCellData(response, respondentRow, optionCol);
 
 		} else {
 			//System.out.println("No Comment");
@@ -113,9 +116,9 @@ public class IndividualResponsePage {
 		
 	}
 	
-	public void getEssayQuestion(WebElement questionElement, String qTitle, int respondentCol) {
+	public void getEssayQuestion(WebElement questionElement, String qTitle, int respondentRow) {
 		String response;
-		int questionRow = ExcelUtility.getRowNumberOfLabel(qTitle);
+		int questionCol = ExcelUtility.getColumnNumberOfLabel(qTitle,0);
 
 		Boolean noResponse = doesByElementExist(By.cssSelector("div.no-response-text"), questionElement);
 
@@ -123,14 +126,15 @@ public class IndividualResponsePage {
 			response = "No response";
 		} else {
 			response = questionElement.findElement(By.cssSelector("p.response-text")).getText();
+			ExcelUtility.setCellData(response, respondentRow, questionCol);
 		}
-		//System.out.println(response);
-		ExcelUtility.setCellData(response, questionRow, respondentCol);
 
 	}
 	
-	public void getMatrixRatingQuestion(WebElement questionElement, String qTitle, int respondentCol) {
-		int questionRow = ExcelUtility.getRowNumberOfLabel(qTitle);
+	public void getMatrixRatingQuestion(WebElement questionElement, String qTitle, int respondentRow) {
+		int questionCol = ExcelUtility.getColumnNumberOfLabel(qTitle,0);
+		System.out.println(qTitle + " is col: " + questionCol);
+		int optionCol;
 		String responseLabel = "none";
 		String responseAnswer = "-1";
 		List<WebElement> responseElements = questionElement
@@ -140,14 +144,14 @@ public class IndividualResponsePage {
 		for (WebElement responseElement : responseElements) {
 			responseLabel = responseElement.findElement(By.className("response-text-label")).getText();
 			responseAnswer = responseElement.findElement(By.className("response-text")).getText();
+			
+			optionCol = ExcelUtility.getColumnNumberOfLabel(responseLabel.replace("\u00a0",""), 1, questionCol);
 			//System.out.println(responseLabel + ": " + responseAnswer);
 			try {
 				int intAnswer = Integer.parseInt(responseAnswer);
-				ExcelUtility.setCellData(intAnswer, questionRow + count, respondentCol+1);
-				ExcelUtility.setCellData(responseLabel, questionRow + count, respondentCol);
-			} catch (Exception NumberFormatException) {
-				ExcelUtility.setCellData(responseAnswer, questionRow + count, respondentCol+1);
-				ExcelUtility.setCellData(responseLabel, questionRow + count, respondentCol);
+				ExcelUtility.setCellData(intAnswer, respondentRow, optionCol);
+			} catch (Exception NumberFormatException) { // aka 
+				ExcelUtility.setCellData(responseAnswer, respondentRow, optionCol);
 			}
 			count++;
 		}
