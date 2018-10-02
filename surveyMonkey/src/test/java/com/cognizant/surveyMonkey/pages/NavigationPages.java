@@ -12,6 +12,7 @@ public class NavigationPages {
 	}
 
 	public void logIn() {
+		
 		driver.findElement(By.id("username")).sendKeys(" ");
 		driver.findElement(By.id("password")).sendKeys(" ");
 		driver.findElement(By.xpath("//button[text()='LOG IN']")).click();		
