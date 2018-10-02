@@ -38,15 +38,10 @@ public class IndividualResponsePage {
 		List<WebElement> respondents = driver.findElements(By.className("respondent"));
 		WebElement visibleRespondent = null;
 		for (WebElement respondent : respondents) {
-			//System.out.println("isDisplayed:" + respondent.isDisplayed());
 			if (respondent.isDisplayed()) {
-				//Boolean elementDoesntExist = respondent.findElements(By.cssSelector("div.respondent-profile")).isEmpty();
 				Boolean elementExists = doesByElementExist(By.cssSelector("div.respondent-profile"));
 				if (elementExists) {
-					//System.out.println("...and contains data");
 					visibleRespondent = respondent;
-				} else {
-					//System.out.println("...but it's empty");
 				}
 			}
 		}
@@ -96,6 +91,14 @@ public class IndividualResponsePage {
 		String response = null;
 
 		for (WebElement responseElement : responseElements) {
+			//---
+			List<WebElement> elements = responseElement.findElements(By.cssSelector(".response-text"));
+			System.out.println("");
+			System.out.println("count: " + elements.size());
+			for (WebElement element :elements) {
+				System.out.println(element.getText());
+			}
+			//-----
 			response = responseElement.findElement(By.cssSelector(".response-text")).getText();
 			optionCol = ExcelUtility.getColumnNumberOfLabel(response, 1, questionCol);
 
